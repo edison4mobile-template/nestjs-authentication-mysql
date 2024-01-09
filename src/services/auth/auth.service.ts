@@ -7,10 +7,11 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from 'src/constant';
 import { CreateUserDto, LoginUserDto } from 'src/services/user/user.dto';
-import { ChangePasswordDto, User } from 'src/entities/user.entity';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { Request } from 'express';
+import { User } from '@/entities/user.entity';
+import { ChangePasswordDto } from '@/modules/user/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
 
   async login(
     loginDto: LoginUserDto,
-  ): Promise<{ accessToken: string; expire: string }> {
+  ): Promise<{ accessToken: string; expire: string; user: User }> {
     const user = await this.userService.findOneByEmail(loginDto.email);
 
     if (!user) {
@@ -35,14 +36,12 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
-
-    const token = this.jwtService.sign({ email: user.email, id: user.id });
-
-    const expire = jwtConstants.expire;
-    return { accessToken: token, expire };
+    return { ...this.generateJWT(user), user };
   }
 
-  async signup(createUserDto: CreateUserDto): Promise<User> {
+  async signup(
+    createUserDto: CreateUserDto,
+  ): Promise<{ accessToken: string; expire: string; user: User }> {
     const existingUser = await this.userService.findOneByEmail(
       createUserDto.email,
     );
@@ -54,7 +53,7 @@ export class AuthService {
     const newUser = await this.userService.create(createUserDto);
     await this.userService.save(newUser);
 
-    return newUser;
+    return { ...this.generateJWT(newUser), user: newUser };
   }
 
   async changePassword(
@@ -98,11 +97,7 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException();
       }
-
-      const token = this.jwtService.sign({ email: user.email, id: user.id });
-
-      const expire = jwtConstants.expire;
-      return { accessToken: token, expire };
+      return this.generateJWT(user);
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
@@ -114,5 +109,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
     return user;
+  }
+
+  generateJWT(user: User): { accessToken: string; expire: string } {
+    const token = this.jwtService.sign({ email: user.email, id: user.id });
+
+    const expire = jwtConstants.expire;
+    return { accessToken: token, expire };
   }
 }

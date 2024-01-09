@@ -4,15 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsPhoneNumber,
-  IsDateString,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsDateString } from 'class-validator';
 
 export enum UserRole {
   admin = 'admin',
@@ -21,7 +15,7 @@ export enum UserRole {
 
 @Entity('users')
 export class User {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty({
@@ -49,8 +43,7 @@ export class User {
     example: '+1234567890',
     description: 'The phone of the user.',
   })
-  @Column({ unique: true })
-  @IsPhoneNumber()
+  @Column({ default: null })
   phone: string;
 
   @Column({ default: false })
@@ -63,48 +56,42 @@ export class User {
     example: 'Address',
     description: 'The address of the user.',
   })
-  @Column()
-  @IsNotEmpty()
+  @Column({ default: null })
   address: string;
 
   @ApiProperty({
     example: 'city',
     description: 'The city of the user.',
   })
-  @Column()
-  @IsNotEmpty()
+  @Column({ default: null })
   city: string;
 
   @ApiProperty({
     example: 'zipcode',
     description: 'The zipcode of the user.',
   })
-  @Column()
-  @IsNotEmpty()
+  @Column({ default: null })
   zipcode: string;
 
   @ApiProperty({
     example: 'state',
     description: 'The state of the user.',
   })
-  @Column()
-  @IsNotEmpty()
+  @Column({ default: null })
   state: string;
 
   @ApiProperty({
     example: 'Country',
     description: 'The country of the user.',
   })
-  @Column()
-  @IsNotEmpty()
+  @Column({ default: null })
   country: string;
 
   @ApiProperty({
     example: '2000-01-01',
     description: 'The birthday of the user (YYYY-MM-DD format).',
   })
-  @Column()
-  @IsDateString()
+  @Column({ default: null })
   birthday: string;
 
   @Column({ default: false })
@@ -129,22 +116,4 @@ export class User {
   })
   @UpdateDateColumn()
   updated_at: Date;
-}
-
-export class ChangePasswordDto {
-  @ApiProperty({
-    example: 'old_password',
-    description: "The user's current password.",
-  })
-  @IsNotEmpty()
-  @IsString()
-  oldPassword: string;
-
-  @ApiProperty({
-    example: 'new_password',
-    description: "The user's new password.",
-  })
-  @IsNotEmpty()
-  @IsString()
-  newPassword: string;
 }

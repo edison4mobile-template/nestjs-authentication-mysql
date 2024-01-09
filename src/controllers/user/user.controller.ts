@@ -16,13 +16,13 @@ import { UpdateUserDto } from 'src/services/user/user.dto';
 import { UserService } from 'src/services/user/user.service';
 
 @ApiTags('User')
+@UseGuards(JwtCustomerGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Put(':id')
   @ApiBearerAuth('token')
-  @UseGuards(JwtCustomerGuard)
   async updateUser(
     @Id() id: number,
     @Body() dto: UpdateUserDto,
@@ -36,14 +36,12 @@ export class UserController {
 
   @Get('profile')
   @ApiBearerAuth('token')
-  @UseGuards(JwtCustomerGuard)
   async getUser(@CurrentUser() currentUser: User): Promise<User> {
     return currentUser;
   }
 
   @Post('verify-identity')
   @ApiBearerAuth('token')
-  @UseGuards(JwtAdminGuard)
   async verifyIdentity(@CurrentUser() currentUser: User): Promise<User> {
     currentUser.verified = true;
     return await this.userService.save(currentUser);
@@ -51,7 +49,6 @@ export class UserController {
 
   @Post('verify-email')
   @ApiBearerAuth('token')
-  @UseGuards(JwtCustomerGuard)
   async verifyEmail(@CurrentUser() currentUser: User): Promise<User> {
     currentUser.email_verified = true;
     return await this.userService.save(currentUser);

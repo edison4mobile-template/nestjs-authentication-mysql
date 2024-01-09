@@ -1,13 +1,11 @@
 import 'reflect-metadata';
 
 import * as dotenv from 'dotenv';
-import * as path from 'path';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { User } from '@/entities/user.entity';
 
 if (!process.env.DB_HOST_WRITER) dotenv.config();
-
-const entitiesPath = path.join(__dirname, '/../models/*.entity.{js,ts}');
 
 const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
@@ -19,7 +17,7 @@ const dataSourceOptions: DataSourceOptions = {
   synchronize: true,
   logging: false,
   poolSize: 10,
-  entities: [entitiesPath],
+  entities: [User],
   migrations: ['.build/src/db/migrations/*.js'],
   migrationsTableName: '_migrations',
   subscribers: [],

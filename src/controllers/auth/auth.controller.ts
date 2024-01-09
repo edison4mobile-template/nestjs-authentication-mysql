@@ -5,7 +5,8 @@ import { AuthService } from 'src/services/auth/auth.service';
 import { JwtCustomerGuard } from 'src/services/auth/jwt-customer.guard';
 import { Request } from 'express';
 import { Id } from 'src/services/auth/user-decorator';
-import { ChangePasswordDto } from 'src/entities/user.entity';
+import { ChangePasswordDto } from '@/modules/user/change-password.dto';
+import { User } from '@/entities/user.entity';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -14,14 +15,18 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Signup' })
   @Post('signup')
-  async signup(@Body() userDto: CreateUserDto): Promise<void> {
-    await this.authService.signup(userDto);
+  async signup(
+    @Body() userDto: CreateUserDto,
+  ): Promise<{ accessToken: string; expire: string; user: User }> {
+    return await this.authService.signup(userDto);
   }
 
   @ApiOperation({ summary: 'Login' })
   @Post('login')
-  async login(@Body() userDto: LoginUserDto): Promise<{ accessToken: string }> {
-    return this.authService.login(userDto);
+  async login(
+    @Body() userDto: LoginUserDto,
+  ): Promise<{ accessToken: string; expire: string; user: User }> {
+    return await this.authService.login(userDto);
   }
 
   @ApiOperation({ summary: 'Refresh token by old bearer token' })
