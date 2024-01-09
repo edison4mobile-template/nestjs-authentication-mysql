@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export enum UserRole {
   admin = 'admin',

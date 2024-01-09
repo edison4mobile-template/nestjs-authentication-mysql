@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/entities/user.entity';
-import { JwtAdminGuard } from 'src/services/auth/jwt-admin.guard';
 import { JwtCustomerGuard } from 'src/services/auth/jwt-customer.guard';
 import { CurrentUser, Id } from 'src/services/auth/user-decorator';
 import { UpdateUserDto } from 'src/services/user/user.dto';
